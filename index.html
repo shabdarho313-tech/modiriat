@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سامانه مدیریت فعالیت‌ها</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Tahoma, sans-serif;
+}
+
+body {
+  background: #f2f8f3;
+  color: #34483a;
+  line-height: 1.8;
+}
+
+header {
+  background: linear-gradient(135deg, #c2e3c9, #91c5a0);
+  color: #365940;
+  padding: 30px 15px;
+  text-align: center;
+}
+
+header h2 {
+  font-size: 23px;
+  margin-bottom: 5px;
+}
+
+header p {
+  font-size: 13px;
+  color: #53775a;
+}
+
+.container {
+  max-width: 950px;
+  margin: 25px auto;
+  padding: 15px;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  flex: 1 1 110px;
+  padding: 13px 8px;
+  border: 1px solid #e0ede2;
+  border-radius: 12px;
+  background: white;
+  color: #52775b;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.tabs button:hover {
+  background: #e8f4e9;
+}
+
+.tabs button.active {
+  background: #91c5a0;
+  color: white;
+  border-color: #91c5a0;
+}
+
+.section {
+  display: none;
+  background: white;
+  padding: 22px;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px #47664d12;
+}
+
+.section.active {
+  display: block;
+}
+
+h3 {
+  color: #638f6c;
+  margin-bottom: 18px;
+  font-size: 19px;
+}
+
+h4 {
+  margin-bottom: 8px;
+  color: #496b50;
+}
+
+.card {
+  background: #f3f8f3;
+  padding: 16px;
+  border-radius: 13px;
+  margin-bottom: 12px;
+  border-right: 4px solid #a7d0ae;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 13px;
+  margin: 8px 0 14px;
+  border: 1px solid #dceade;
+  border-radius: 11px;
+  outline: none;
+  background: #fbfdfb;
+  font-size: 14px;
+  color: #34483a;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #91c5a0;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 85px;
+}
+
+label {
+  font-size: 13px;
+  color: #69816d;
+}
+
+.main-btn {
+  background: #91c5a0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  cursor: pointer;
+  margin: 5px 0;
+  font-size: 13px;
+}
+
+.main-btn:hover {
+  background: #78ad87;
+}
+
+.delete-btn {
+  background: #f9e9e7;
+  color: #b36d64;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.status {
+  display: inline-block;
+  background: #e3f2e5;
+  color: #578260;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.empty {
+  color: #a4b3a6;
+  text-align: center;
+  padding: 20px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #e8f0e8;
+  margin: 22px 0;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #91a594;
+  font-size: 12px;
+}
+
+@media(max-width:600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .section {
+    padding: 16px;
+  }
+
+  header {
+    padding: 23px 10px;
+  }
+
+  header h2 {
+    font-size: 20px;
+  }
+
+  .tabs button {
+    flex: 1 1 30%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🌿 سامانه مدیریت فعالیت‌ها</h2>
+  <p>نظم، هماهنگی و پیگیری مسئولیت‌ها</p>
+</header>
+
+<div class="container">
+
+<div class="tabs">
+  <button class="active" onclick="showTab('home',this)">🏡 داشبورد</button>
+  <button onclick="showTab('duties',this)">📋 شرح وظایف</button>
+  <button onclick="showTab('tasks',this)">✅ وظایف</button>
+  <button onclick="showTab('reports',this)">📝 گزارش‌ها</button>
+  <button onclick="showTab('rules',this)">📖 دستورالعمل‌ها</button>
+  <button onclick="showTab('evaluation',this)">📊 ارزیابی</button>
+  <button onclick="showTab('news',this)">📢 اطلاعیه‌ها</button>
+  <button onclick="showTab('questions',this)">💬 پرسش‌ها</button>
+</div>
+
+<!-- داشبورد -->
+<section id="home" class="section active">
+  <h3>خوش آمدید 🌷</h3>
+
+  <div class="card">
+    <h4>سامانه پیگیری فعالیت‌ها</h4>
+    <p>در این سامانه می‌توانید مسئولیت‌ها، وظایف و دستورالعمل‌های کاری را مشاهده و پیگیری کنید.</p>
+  </div>
+
+  <div class="card">
+    <h4>تعداد وظایف</h4>
+    <h2 id="taskCount">0</h2>
+  </div>
+
+  <div class="card">
+    <h4>گزارش‌های ثبت‌شده</h4>
+    <h2 id="reportCount">0</h2>
+  </div>
+
+  <div class="card">
+    <h4>اطلاعیه‌ها</h4>
+    <h2 id="newsCount">0</h2>
+  </div>
+</section>
+
+<!-- شرح وظایف -->
+<section id="duties" class="section">
+  <h3>شرح وظایف و مسئولیت‌ها</h3>
+
+  <div id="dutyList"></div>
+
+  <hr>
+
+  <h4>افزودن مسئولیت جدید</h4>
+  <input id="dutyTitle" placeholder="عنوان مسئولیت">
+  <textarea id="dutyDesc" placeholder="شرح کامل مسئولیت"></textarea>
+
+  <button class="main-btn" onclick="addItem('duties')">ثبت مسئولیت</button>
+</section>
+
+<!-- وظایف -->
+<section id="tasks" class="section">
+  <h3>کارهای محول‌شده</h3>
+
+  <div id="taskList"></div>
+
+  <hr>
+
+  <h4>تعریف وظیفه جدید</h4>
+
+  <input id="taskTitle" placeholder="عنوان وظیفه">
+  <input id="taskPerson" placeholder="نام فرد مسئول">
+  <input id="taskDate" type="date">
+  <textarea id="taskDesc" placeholder="توضیحات و جزئیات کار"></textarea>
+
+  <button class="main-btn" onclick="addItem('tasks')">ثبت وظیفه</button>
+</section>
+
+<!-- گزارش -->
+<section id="reports" class="section">
+  <h3>گزارش فعالیت‌ها</h3>
+
+  <div id="reportList"></div>
+
+  <hr>
+
+  <h4>ثبت گزارش جدید</h4>
+
+  <input id="reportPerson" placeholder="نام گزارش‌دهنده">
+  <textarea id="reportDesc" placeholder="شرح فعالیت‌های انجام‌شده"></textarea>
+
+  <button class="main-btn" onclick="addItem('reports')">ثبت گزارش</button>
+</section>
+
+<!-- دستورالعمل -->
+<section id="rules" class="section">
+  <h3>دستورالعمل‌ها و قوانین</h3>
+
+  <div id="ruleList"></div>
+
+  <hr>
+
+  <h4>افزودن دستورالعمل</h4>
+
+  <input id="ruleTitle" placeholder="عنوان دستورالعمل">
+  <textarea id="ruleDesc" placeholder="متن دستورالعمل"></textarea>
+
+  <button class="main-btn" onclick="addItem('rules')">ثبت دستورالعمل</button>
+</section>
+
+<!-- ارزیابی -->
+<section id="evaluation" class="section">
+  <h3>ارزیابی عملکرد</h3>
+
+  <div id="evaluationList"></div>
+
+  <hr>
+
+  <h4>ثبت ارزیابی</h4>
+
+  <input id="evalPerson" placeholder="نام فرد">
+
+  <select id="evalScore">
+    <option value="عالی">عالی</option>
+    <option value="خوب">خوب</option>
+    <option value="نیازمند بهبود">نیازمند بهبود</option>
+  </select>
+
+  <textarea id="evalDesc" placeholder="توضیحات و دلایل ارزیابی"></textarea>
+
+  <button class="main-btn" onclick="addItem('evaluation')">ثبت ارزیابی</button>
+</section>
+
+<!-- اطلاعیه -->
+<section id="news" class="section">
+  <h3>اطلاعیه‌ها</h3>
+
+  <div id="newsList"></div>
+
+  <hr>
+
+  <h4>انتشار اطلاعیه جدید</h4>
+
+  <input id="newsTitle" placeholder="عنوان اطلاعیه">
+  <textarea id="newsDesc" placeholder="متن اطلاعیه"></textarea>
+
+  <button class="main-btn" onclick="addItem('news')">انتشار اطلاعیه</button>
+</section>
+
+<!-- پرسش‌ها -->
+<section id="questions" class="section">
+  <h3>پرسش‌ها و مشکلات</h3>
+
+  <div id="questionList"></div>
+
+  <hr>
+
+  <h4>ثبت پرسش جدید</h4>
+
+  <input id="questionPerson" placeholder="نام فرد">
+  <textarea id="questionDesc" placeholder="سؤال یا مشکل خود را بنویسید"></textarea>
+
+  <button class="main-btn" onclick="addItem('questions')">ارسال پرسش</button>
+</section>
+
+</div>
+
+<footer>
+  سامانه مدیریت و پیگیری فعالیت‌ها 🌱
+</footer>
+
+<script>
+
+const keys = [
+  'duties',
+  'tasks',
+  'reports',
+  'rules',
+  'evaluation',
+  'news',
+  'questions'
+];
+
+let data = {};
+
+keys.forEach(key => {
+  data[key] = JSON.parse(
+    localStorage.getItem('manager_' + key) || '[]'
+  );
+});
+
+function save(key) {
+  localStorage.setItem(
+    'manager_' + key,
+    JSON.stringify(data[key])
+  );
+}
+
+function showTab(id, button) {
+
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.remove('active');
+  });
+
+  document.querySelectorAll('.tabs button').forEach(b => {
+    b.classList.remove('active');
+  });
+
+  document.getElementById(id).classList.add('active');
+  button.classList.add('active');
+}
+
+const fields = {
+
+  duties: ['dutyTitle','dutyDesc'],
+
+  tasks: ['taskTitle','taskDesc','taskPerson','taskDate'],
+
+  reports: ['reportPerson','reportDesc'],
+
+  rules: ['ruleTitle','ruleDesc'],
+
+  evaluation: ['evalPerson','evalDesc','evalScore'],
+
+  news: ['newsTitle','newsDesc'],
+
+  questions: ['questionPerson','questionDesc']
+
+};
+
+function addItem(key) {
+
+  const values = fields[key].map(id =>
+    document.getElementById(id).value.trim()
+  );
+
+  if(values.some(v => !v)) {
+    alert('لطفاً همه فیلدها را تکمیل کنید.');
+    return;
+  }
+
+  data[key].unshift({
+
+    id: Date.now(),
+
+    values: values,
+
+    status: key === 'tasks' ? 'انجام‌نشده' : ''
+
+  });
+
+  save(key);
+  renderAll();
+
+  fields[key].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  alert('اطلاعات با موفقیت ثبت شد 🌿');
+}
+
+function removeItem(key,id) {
+
+  if(!confirm('آیا از حذف این مورد مطمئن هستید؟')) {
+    return;
+  }
+
+  data[key] = data[key].filter(item => item.id !== id);
+
+  save(key);
+  renderAll();
+}
+
+function changeStatus(id) {
+
+  const item = data.tasks.find(t => t.id === id);
+
+  if(!item) return;
+
+  const states = [
+    'انجام‌نشده',
+    'در حال انجام',
+    'انجام‌شده'
+  ];
+
+  item.status = states[
+    (states.indexOf(item.status) + 1) % states.length
+  ];
+
+  save('tasks');
+  renderAll();
+}
+
+function safe(text) {
+
+  return String(text).replace(/[&<>"']/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  })[c]);
+
+}
+
+function render(key) {
+
+  const targetIds = {
+
+    duties: 'dutyList',
+    tasks: 'taskList',
+    reports: 'reportList',
+    rules: 'ruleList',
+    evaluation: 'evaluationList',
+    news: 'newsList',
+    questions: 'questionList'
+
+  };
+
+  const target = document.getElementById(targetIds[key]);
+
+  target.innerHTML = '';
+
+  if(!data[key].length) {
+
+    target.innerHTML =
+      '<p class="empty">هنوز موردی ثبت نشده است.</p>';
+
+    return;
+  }
+
+  data[key].forEach(item => {
+
+    const v = item.values;
+    let html = '';
+
+    if(key === 'duties') {
+
+      html = `
+        <h4>${safe(v[0])}</h4>
+        <p>${safe(v[1])}</p>
+      `;
+
+    }
+
+    if(key === 'tasks') {
+
+      html = `
+        <h4>${safe(v[0])}</h4>
+        <p>مسئول: ${safe(v[2])}</p>
+        <p>مهلت: ${safe(v[3])}</p>
+        <p>${safe(v[1])}</p>
+
+        <span class="status">
+          ${safe(item.status)}
+        </span>
+
+        <br>
+
+        <button class="main-btn"
+          onclick="changeStatus(${item.id})">
+          تغییر وضعیت
+        </button>
+      `;
+
+    }
+
+    if(key === 'reports') {
+
+      html = `
+        <h4>${safe(v[0])}</h4>
+        <p>${safe(v[1])}</p>
+      `;
+
+    }
+
+    if(key === 'rules') {
+
+      html = `
+        <h4>${safe(v[0])}</h4>
+        <p>${safe(v[1])}</p>
+      `;
+
+    }
+
+    if(key === 'evaluation') {
+
+      html = `
+        <h4>${safe(v[0])}</h4>
+        <p>ارزیابی: ${safe(v[2])}</p>
+        <p>${safe(v[1])}</p>
+      `;
+
+    }
+
+    if(key === 'news') {
+
+      html = `
+        <h4>${safe(v[0])}</h4>
+        <p>${safe(v[1])}</p>
+      `;
+
+    }
+
+    if(key === 'questions') {
+
+      html = `
+        <h4>${safe(v[0])}</h4>
+        <p>${safe(v[1])}</p>
+      `;
+
+    }
+
+    const card = document.createElement('div');
+
+    card.className = 'card';
+
+    card.innerHTML = html + `
+      <br>
+      <button class="delete-btn"
+        onclick="removeItem('${key}',${item.id})">
+        حذف
+      </button>
+    `;
+
+    target.appendChild(card);
+
+  });
+
+}
+
+function renderAll() {
+
+  keys.forEach(render);
+
+  document.getElementById('taskCount').textContent =
+    data.tasks.length;
+
+  document.getElementById('reportCount').textContent =
+    data.reports.length;
+
+  document.getElementById('newsCount').textContent =
+    data.news.length;
+
+}
+
+renderAll();
+
+</script>
+
+</body>
+</html>
