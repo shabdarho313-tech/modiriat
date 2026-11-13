@@ -528,9 +528,13 @@ async function loadApp(){
   $("welcomeTitle").textContent="خوش آمدید";
   $("welcomeInfo").textContent=user.email||"";
 
-  await ensureProfile();
+  notify("authMessage","ورود تأیید شد؛ بررسی پروفایل...");
 
-  if(isAdmin){
+await ensureProfile();
+
+notify("authMessage","پروفایل بارگذاری شد؛ بررسی نقش کاربر...");
+
+if(isAdmin){
     show("adminArea",true);
     show("memberArea",false);
     show("pendingBox",false);
