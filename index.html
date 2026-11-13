@@ -3,177 +3,993 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#e8f3e9">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>سامانه مدیریت فعالیت‌ها</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js"></script>
+<script src="./config.js"></script>
 <style>
-:root{--g:#83b992;--gd:#477b57;--ink:#304638;--muted:#788b7d;--line:#e1ece3}
+:root{
+  --green:#dcefe5;
+  --green2:#b9ddc9;
+  --dark:#285a43;
+  --bg:#f5f8f5;
+  --white:#fff;
+  --text:#26372e;
+  --muted:#718078;
+  --border:#e3ebe5;
+  --red:#b84b4b;
+}
 *{box-sizing:border-box}
-body{margin:0;background:#f5f9f5;color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.8}
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.8;
+}
 button,input,textarea,select{font:inherit}
-button{cursor:pointer}
+button{
+  border:0;
+  border-radius:10px;
+  padding:10px 16px;
+  cursor:pointer;
+  background:var(--dark);
+  color:white;
+}
+button:hover{opacity:.88}
+button.secondary{background:var(--green);color:var(--dark)}
+button.danger{background:#f7e2e2;color:var(--red)}
+input,textarea,select{
+  width:100%;
+  padding:11px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:white;
+  outline:none;
+  margin:5px 0 12px;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--green2)}
+textarea{min-height:90px;resize:vertical}
+label{font-size:13px;font-weight:bold}
+h1,h2,h3{line-height:1.5}
+h1{font-size:23px}
+h2{font-size:19px}
+h3{font-size:16px}
+.small{font-size:12px;color:var(--muted)}
 .hidden{display:none!important}
-header{background:linear-gradient(130deg,#dcefe0,#a9d2b2);padding:22px 12px;text-align:center;color:#365d40}
-header h1{font-size:21px;margin:0}
-header p{font-size:12px;margin:4px 0 0}
-.wrap{max-width:1050px;margin:22px auto;padding:0 12px}
-.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:15px;box-shadow:0 8px 24px #31563b0c}
-.auth{max-width:460px;margin:35px auto}
-.muted,.small{color:var(--muted);font-size:12px}
-h2{font-size:18px;color:var(--gd);margin:0 0 12px}
-h3{font-size:15px;color:var(--gd);margin:0 0 8px}
-.field{margin:10px 0}
-.field label{display:block;font-size:13px;color:#617a67;margin-bottom:5px}
-input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fcfefc;color:var(--ink);outline:none}
-textarea{min-height:85px;resize:vertical}
-input:focus,textarea:focus,select:focus{border-color:var(--g)}
-.btn{border:0;border-radius:10px;padding:10px 15px;background:var(--g);color:white;font-size:13px}
-.btn.secondary{background:#edf5ee;color:#4e7658}
-.btn.danger{background:#faeeee;color:#b75c5c}
-.btn.ghost{background:white;color:var(--gd);border:1px solid var(--line)}
-.full{width:100%;margin-top:7px}
-.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
-.tabs button{border:1px solid var(--line);background:#fff;color:#64806a;padding:9px 12px;border-radius:11px;font-size:12px}
-.tabs button.active{background:var(--g);color:#fff}
-.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.stat,.card,.question{background:#f8fbf8;border:1px solid var(--line);border-radius:13px;padding:13px;margin:10px 0}
-.stat strong{font-size:24px;color:var(--gd);display:block}
-.badge{display:inline-block;background:#e9f4eb;color:#4e805a;border-radius:18px;padding:2px 9px;font-size:11px}
-.empty{text-align:center;color:#9aaa9c;padding:22px}
-.notice{background:#fff9e9;border:1px solid #f0e6c7;color:#816e3f;padding:12px;border-radius:11px;font-size:12px;margin:10px 0}
-hr{border:0;border-top:1px solid var(--line);margin:18px 0}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.container{max-width:1100px;margin:auto;padding:18px}
+.card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 3px 12px #254d3510;
+}
+.auth-wrap{
+  max-width:430px;
+  margin:7vh auto;
+  padding:15px;
+}
+.brand{text-align:center;margin-bottom:20px}
+.brand .symbol{font-size:36px}
+.brand h1{color:var(--dark);margin:5px}
+.tabs{display:flex;gap:8px;margin-bottom:15px}
+.tabs button{flex:1}
+.topbar{
+  background:var(--green);
+  padding:12px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.topbar strong{color:var(--dark)}
+.nav{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:12px 0;
+}
+.nav button{white-space:nowrap}
+.nav button.active{background:var(--dark)}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+}
+.stat{
+  background:var(--green);
+  border-radius:14px;
+  padding:15px;
+}
+.stat strong{font-size:24px;color:var(--dark);display:block}
+.item{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px;
+  margin:10px 0;
+  background:#fff;
+}
+.item p{margin:5px 0}
+.row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
 .row>*{flex:1}
-table{width:100%;border-collapse:collapse;font-size:12px}
-td,th{text-align:right;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:#68836d;background:#f7faf7}
-.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
-footer{text-align:center;padding:22px;color:#98aa9b;font-size:11px}
-@media(max-width:600px){.panel{padding:15px}.tabs button{flex:1 1 42%}header h1{font-size:19px}}
+.row button{flex:0 0 auto}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+.notice{
+  padding:12px;
+  border-radius:10px;
+  background:#eef6f0;
+  margin:10px 0;
+}
+.error{background:#fff0f0;color:#9d3333}
+.success{background:#e9f7ed;color:#28623f}
+.question{
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin:12px 0;
+}
+.question label{display:block;margin-bottom:5px}
+footer{text-align:center;color:var(--muted);padding:25px;font-size:12px}
+@media(max-width:600px){
+  .container{padding:11px}
+  .card{padding:14px}
+  h1{font-size:20px}
+}
 </style>
 </head>
 <body>
-<header><h1>🌿 سامانه مدیریت فعالیت‌ها</h1><p>نظم، هماهنگی و پیگیری مسئولیت‌ها</p></header>
-<main class="wrap">
-<section id="auth" class="auth panel">
-<h2 style="text-align:center">ورود به سامانه</h2>
-<form id="login">
-<div class="field"><label>ایمیل</label><input id="email" type="email" required></div>
-<div class="field"><label>رمز عبور</label><input id="password" type="password" required></div>
-<button class="btn full">ورود</button></form>
-<hr><h3>ساخت حساب عضو</h3><p class="muted">پس از ساخت حساب و تأیید ایمیل، مدیر دسترسی تو را تعیین می‌کند.</p>
-<form id="signup">
-<div class="field"><label>نام و نام خانوادگی</label><input id="newname" required maxlength="100"></div>
-<div class="field"><label>ایمیل</label><input id="newemail" type="email" required></div>
-<div class="field"><label>رمز عبور (حداقل ۸ نویسه)</label><input id="newpass" type="password" minlength="8" required></div>
-<button class="btn secondary full">ساخت حساب</button></form><p id="authmsg" class="small"></p>
-</section>
-<section id="onboard" class="panel hidden"><h2>تکمیل مشخصات</h2><form id="profileform"><div class="field"><label>نام و نام خانوادگی</label><input id="fullname" required maxlength="100"></div><button class="btn">ثبت</button></form></section>
-<section id="pending" class="panel hidden"><h2>در انتظار تعیین دسترسی 🌱</h2><p>حساب تو ساخته شده است. مدیر باید دسته و فضای خصوصی‌ات را مشخص کند.</p><button class="btn secondary" id="refresh">بررسی دوباره</button></section>
-<section id="app" class="hidden">
-<div class="panel top"><div><h2 id="welcome">خوش آمدی</h2><div id="subtitle" class="muted"></div></div><button class="btn ghost" id="logout">خروج</button></div>
-<div id="member" class="hidden">
-<nav class="tabs" id="mtabs"><button class="active" data-view="reportview">ثبت گزارش</button><button data-view="historyview">گزارش‌های من</button><button data-view="messageview">پیام به مدیر</button></nav>
-<section id="reportview" class="panel view"><h2>ثبت گزارش فعالیت</h2><form id="reportform"><div class="field"><label>تاریخ گزارش</label><input id="rdate" type="date" required></div><div id="qfields"></div><div class="field"><label>مطالب یا درخواست اضافی برای مدیر (اختیاری)</label><textarea id="extra"></textarea></div><button class="btn">ثبت گزارش</button></form></section>
-<section id="historyview" class="panel view hidden"><h2>گزارش‌های قبلی من</h2><div id="history"></div></section>
-<section id="messageview" class="panel view hidden"><h2>پیام به مدیر</h2><form id="messageform"><div class="field"><label>متن پیام</label><textarea id="messagebody" required maxlength="5000"></textarea></div><button class="btn">ارسال پیام</button></form><hr><div id="mymessages"></div></section>
+
+<div id="authPage" class="auth-wrap">
+  <div class="brand">
+    <div class="symbol">🌱</div>
+    <h1>سامانه مدیریت فعالیت‌ها</h1>
+    <div class="small">سامانه ثبت و پیگیری فعالیت‌ها</div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button id="loginTab">ورود</button>
+      <button id="signupTab" class="secondary">ثبت‌نام</button>
+    </div>
+
+    <form id="loginForm">
+      <label>ایمیل</label>
+      <input id="loginEmail" type="email" required placeholder="ایمیل خود را وارد کنید">
+      <label>رمز عبور</label>
+      <input id="loginPassword" type="password" required placeholder="رمز عبور">
+      <button type="submit" style="width:100%">ورود به سامانه</button>
+    </form>
+
+    <form id="signupForm" class="hidden">
+      <label>نام و نام خانوادگی</label>
+      <input id="signupName" required placeholder="نام کامل">
+      <label>ایمیل</label>
+      <input id="signupEmail" type="email" required placeholder="ایمیل">
+      <label>رمز عبور</label>
+      <input id="signupPassword" type="password" minlength="6" required placeholder="حداقل ۶ کاراکتر">
+      <button type="submit" style="width:100%">ایجاد حساب کاربری</button>
+    </form>
+
+    <div id="authMessage"></div>
+  </div>
 </div>
-<div id="admin" class="hidden">
-<nav class="tabs" id="atabs"><button class="active" data-view="dashview">نمای کلی</button><button data-view="membersview">اعضا</button><button data-view="spacesview">فضاهای خصوصی</button><button data-view="questionsview">پرسش‌ها</button><button data-view="reportsview">گزارش‌ها</button><button data-view="messagesview">پیام‌ها</button><button data-view="catsview">دسته‌ها</button></nav>
-<section id="dashview" class="panel view"><h2>داشبورد مدیر</h2><div id="stats" class="grid"></div><div class="notice">عضو ابتدا از صفحه ورود حساب می‌سازد و ایمیلش را تأیید می‌کند؛ سپس در بخش اعضا به او دسته و فضای خصوصی اختصاص بده.</div></section>
-<section id="membersview" class="panel view hidden"><h2>مدیریت اعضا</h2><div id="members"></div></section>
-<section id="spacesview" class="panel view hidden"><h2>فضاهای خصوصی</h2><form id="spaceform"><input id="spaceid" type="hidden"><div class="row"><div class="field"><label>دسته</label><select id="spacecat"></select></div><div class="field"><label>نام فضا</label><input id="spacename" required></div></div><button class="btn">ذخیره فضا</button></form><div id="spaces"></div></section>
-<section id="questionsview" class="panel view hidden"><h2>مدیریت پرسش‌ها</h2><form id="questionform"><input id="qid" type="hidden"><div class="field"><label>دسته</label><select id="qcat"></select></div><div class="field"><label>متن پرسش</label><textarea id="qbody" required></textarea></div><div class="row"><div class="field"><label>ترتیب</label><input id="qorder" type="number" value="0"></div><div class="field"><label>وضعیت</label><select id="qactive"><option value="true">فعال</option><option value="false">غیرفعال</option></select></div></div><button class="btn">ذخیره پرسش</button></form><div id="questions"></div></section>
-<section id="reportsview" class="panel view hidden"><h2>همه گزارش‌ها</h2><div class="field"><label>فیلتر تاریخ</label><input type="date" id="filterdate"></div><div id="reports"></div></section>
-<section id="messagesview" class="panel view hidden"><h2>پیام‌های اعضا</h2><div id="messages"></div></section>
-<section id="catsview" class="panel view hidden"><h2>مدیریت دسته‌ها</h2><form id="catform"><input id="catid" type="hidden"><div class="row"><div class="field"><label>نام دسته</label><input id="catname" required></div><div class="field"><label>ترتیب</label><input id="catorder" type="number" value="0"></div></div><button class="btn">ذخیره دسته</button></form><div id="categories"></div></section>
-</div></section>
-</main>
-<footer>سامانه مدیریت و پیگیری فعالیت‌ها 🌱</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.js"></script>
-<script src="./config.js"></script>
+
+<div id="appPage" class="hidden">
+  <header class="topbar">
+    <strong>🌱 سامانه مدیریت فعالیت‌ها</strong>
+    <div class="row" style="flex:0 0 auto">
+      <span id="userLabel" class="small"></span>
+      <button id="logoutBtn" class="secondary">خروج</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="welcomeBox" class="card">
+      <h2 id="welcomeTitle">خوش آمدید</h2>
+      <div id="welcomeInfo" class="small"></div>
+    </div>
+
+    <div id="pendingBox" class="card hidden">
+      <h2>حساب کاربری شما در انتظار تعیین گروه است</h2>
+      <p>حساب شما ایجاد شده است. مدیر سامانه باید دسته‌بندی و فضای فعالیت شما را مشخص کند.</p>
+    </div>
+
+    <div id="memberArea" class="hidden">
+      <div class="nav" id="memberNav">
+        <button data-page="memberHome" class="active">خانه</button>
+        <button data-page="newReport">ثبت گزارش</button>
+        <button data-page="myReports">گزارش‌های من</button>
+        <button data-page="messages">پیام به مدیر</button>
+      </div>
+
+      <section id="memberHome" class="page">
+        <div class="grid">
+          <div class="stat">
+            <span>دسته‌بندی</span>
+            <strong id="memberCategory">-</strong>
+          </div>
+          <div class="stat">
+            <span>فضای فعالیت</span>
+            <strong id="memberSpace">-</strong>
+          </div>
+        </div>
+        <div class="card">
+          <h2>سؤال‌ها و فعالیت‌های تعیین‌شده</h2>
+          <div id="memberQuestions"></div>
+        </div>
+      </section>
+
+      <section id="newReport" class="page hidden">
+        <div class="card">
+          <h2>ثبت گزارش فعالیت</h2>
+          <label>تاریخ گزارش</label>
+          <input type="date" id="reportDate">
+          <div id="reportQuestions"></div>
+          <button id="submitReport">ثبت گزارش</button>
+          <div id="reportMessage"></div>
+        </div>
+      </section>
+
+      <section id="myReports" class="page hidden">
+        <div class="card">
+          <h2>گزارش‌های من</h2>
+          <div id="myReportsList"></div>
+        </div>
+      </section>
+
+      <section id="messages" class="page hidden">
+        <div class="card">
+          <h2>ارسال پیام به مدیر</h2>
+          <textarea id="messageText" placeholder="پیام خود را بنویسید..."></textarea>
+          <button id="sendMessage">ارسال پیام</button>
+          <div id="messageStatus"></div>
+          <hr>
+          <h3>پیام‌های قبلی</h3>
+          <div id="myMessages"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="adminArea" class="hidden">
+      <div class="nav" id="adminNav">
+        <button data-page="adminHome" class="active">داشبورد</button>
+        <button data-page="adminMembers">اعضا</button>
+        <button data-page="adminSpaces">فضاها</button>
+        <button data-page="adminQuestions">سؤال‌ها</button>
+        <button data-page="adminReports">گزارش‌ها</button>
+        <button data-page="adminMessages">پیام‌ها</button>
+        <button data-page="adminCategories">دسته‌بندی‌ها</button>
+      </div>
+
+      <section id="adminHome" class="page">
+        <div class="grid">
+          <div class="stat"><span>تعداد اعضا</span><strong id="countMembers">۰</strong></div>
+          <div class="stat"><span>تعداد گزارش‌ها</span><strong id="countReports">۰</strong></div>
+          <div class="stat"><span>تعداد سؤال‌ها</span><strong id="countQuestions">۰</strong></div>
+          <div class="stat"><span>تعداد فضاها</span><strong id="countSpaces">۰</strong></div>
+        </div>
+        <div class="card">
+          <h2>راهنمای مدیر</h2>
+          <p>از بخش اعضا می‌توانی افراد را به دسته‌بندی و فضای فعالیت اختصاص بدهی.</p>
+          <p>در بخش سؤال‌ها، فعالیت‌ها و پرسش‌های موردنیاز هر دسته‌بندی را ثبت کن.</p>
+          <p>در بخش گزارش‌ها، پاسخ‌های اعضا را مشاهده کن.</p>
+        </div>
+      </section>
+
+      <section id="adminMembers" class="page hidden">
+        <div class="card">
+          <h2>مدیریت اعضا</h2>
+          <p class="small">اعضا ابتدا باید از صفحه ثبت‌نام حساب بسازند. سپس نام و شناسه حسابشان در این بخش نمایش داده می‌شود.</p>
+          <div id="membersList"></div>
+        </div>
+      </section>
+
+      <section id="adminSpaces" class="page hidden">
+        <div class="card">
+          <h2>ایجاد فضای فعالیت</h2>
+          <label>دسته‌بندی</label>
+          <select id="spaceCategory"></select>
+          <label>نام فضا یا گروه</label>
+          <input id="spaceName" placeholder="نام فضا">
+          <button id="addSpace">ایجاد فضا</button>
+          <div id="spaceStatus"></div>
+          <hr>
+          <h3>فضاهای موجود</h3>
+          <div id="spacesList"></div>
+        </div>
+      </section>
+
+      <section id="adminQuestions" class="page hidden">
+        <div class="card">
+          <h2>افزودن سؤال یا فعالیت</h2>
+          <label>دسته‌بندی</label>
+          <select id="questionCategory"></select>
+          <label>متن سؤال یا فعالیت</label>
+          <textarea id="questionBody" placeholder="متن سؤال را وارد کن"></textarea>
+          <label>ترتیب نمایش</label>
+          <input id="questionOrder" type="number" value="0">
+          <button id="addQuestion">ثبت سؤال</button>
+          <div id="questionStatus"></div>
+          <hr>
+          <h3>سؤال‌های موجود</h3>
+          <div id="questionsList"></div>
+        </div>
+      </section>
+
+      <section id="adminReports" class="page hidden">
+        <div class="card">
+          <h2>گزارش فعالیت اعضا</h2>
+          <label>فیلتر تاریخ</label>
+          <input type="date" id="adminReportDate">
+          <button id="filterReports" class="secondary">اعمال فیلتر</button>
+          <div id="reportsList"></div>
+        </div>
+      </section>
+
+      <section id="adminMessages" class="page hidden">
+        <div class="card">
+          <h2>پیام‌های اعضا</h2>
+          <div id="adminMessagesList"></div>
+        </div>
+      </section>
+
+      <section id="adminCategories" class="page hidden">
+        <div class="card">
+          <h2>دسته‌بندی‌ها</h2>
+          <label>نام دسته‌بندی جدید</label>
+          <input id="categoryName" placeholder="نام دسته‌بندی">
+          <button id="addCategory">افزودن دسته‌بندی</button>
+          <div id="categoryStatus"></div>
+          <hr>
+          <div id="categoriesList"></div>
+        </div>
+      </section>
+    </div>
+
+    <div id="appMessage"></div>
+  </main>
+  <footer>سامانه مدیریت فعالیت‌ها</footer>
+</div>
+
 <script>
-(()=>{
+(() => {
 "use strict";
-const $=id=>document.getElementById(id), db=window.supabase.createClient(APP_CONFIG.SUPABASE_URL,APP_CONFIG.SUPABASE_PUBLISHABLE_KEY);
-let user=null,profile=null,cats=[],spaces=[],members=[],allReports=[],allMessages=[],allQuestions=[];
-const isAdmin=()=>user?.app_metadata?.role==="admin";
-const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const faDate=x=>x?new Date(x+"T00:00:00").toLocaleDateString("fa-IR"):"—";
-const say=s=>alert(s);
-function screen(id){["auth","onboard","pending","app"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
-function tab(nav,id){$(nav).querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));const root=nav==="mtabs"?"member":"admin";$(root).querySelectorAll(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id))}
-async function getProfile(){const {data,error}=await db.from("profiles").select("*").eq("user_id",user.id).maybeSingle();if(error)throw error;profile=data}
-async function init(){
- const {data:{user:u}}=await db.auth.getUser();user=u;
- if(!user){screen("auth");return}
- try{
-  await getProfile();
-  if(!profile){$("fullname").value=user.user_metadata?.full_name||"";screen("onboard");return}
-  if(isAdmin()){screen("app");$("member").classList.add("hidden");$("admin").classList.remove("hidden");$("welcome").textContent="پنل مدیریت";$("subtitle").textContent=user.email;await loadAdmin();return}
-  if(!profile.category_id||!profile.space_id){screen("pending");return}
-  screen("app");$("admin").classList.add("hidden");$("member").classList.remove("hidden");$("welcome").textContent="سلام "+(profile.full_name||"");await loadMember();
- }catch(e){console.error(e);say("خطا: "+e.message);screen("auth")}
-}
-async function loadCats(){let r=await db.from("categories").select("*").order("sort_order");if(r.error)throw r.error;cats=r.data||[]}
-async function loadSpaces(){let r=await db.from("spaces").select("*").order("sort_order");if(r.error)throw r.error;spaces=r.data||[]}
-$("login").onsubmit=async e=>{e.preventDefault();let r=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("authmsg").textContent=r.error.message;return}await init()};
-$("signup").onsubmit=async e=>{e.preventDefault();let r=await db.auth.signUp({email:$("newemail").value.trim(),password:$("newpass").value,options:{data:{full_name:$("newname").value.trim()}}});if(r.error){$("authmsg").textContent=r.error.message;return}if(r.data.session){user=r.data.user;await init()}else $("authmsg").textContent="حساب ساخته شد. ایمیل را تأیید کن و سپس وارد شو."};
-$("profileform").onsubmit=async e=>{e.preventDefault();let r=await db.from("profiles").insert({user_id:user.id,full_name:$("fullname").value.trim(),category_id:null,space_id:null});if(r.error){say(r.error.message);return}await init()};
-$("refresh").onclick=init;
-$("logout").onclick=async()=>{await db.auth.signOut();user=null;profile=null;screen("auth")};
-$("mtabs").onclick=e=>{let b=e.target.closest("[data-view]");if(b)tab("mtabs",b.dataset.view)};
-$("atabs").onclick=e=>{let b=e.target.closest("[data-view]");if(b)tab("atabs",b.dataset.view)};
-async function loadMember(){
- await loadCats();await loadSpaces();
- let c=cats.find(x=>x.id===profile.category_id),s=spaces.find(x=>x.id===profile.space_id);$("subtitle").textContent=(c?.name||"")+" · "+(s?.name||"");
- let r=await db.from("questions").select("*").eq("category_id",profile.category_id).eq("is_active",true).order("sort_order");if(r.error)throw r.error;
- $("qfields").innerHTML=r.data.length?r.data.map((q,i)=>`<div class="question"><label>${i+1}. ${esc(q.body)}</label><textarea data-qid="${q.id}" data-qtext="${esc(q.body)}"></textarea></div>`).join(""):'<p class="empty">پرسشی برای این دسته ثبت نشده است.</p>';
- $("rdate").value=new Date().toLocaleDateString("en-CA");await history();await myMessages();
-}
-async function history(){
- let r=await db.from("reports").select("*").eq("user_id",user.id).order("report_date",{ascending:false});if(r.error)throw r.error;
- if(!r.data.length){$("history").innerHTML='<p class="empty">گزارشی ثبت نشده است.</p>';return}
- let a=await db.from("answers").select("*").in("report_id",r.data.map(x=>x.id));if(a.error)throw a.error;
- $("history").innerHTML=r.data.map(x=>`<div class="card"><h3>گزارش ${faDate(x.report_date)}</h3>${a.data.filter(y=>y.report_id===x.id).map(y=>`<div class="question"><b>${esc(y.question_text)}</b><p>${esc(y.answer_text)}</p></div>`).join("")}</div>`).join("");
-}
-async function myMessages(){let r=await db.from("messages").select("*").eq("user_id",user.id).order("created_at",{ascending:false});if(r.error)throw r.error;$("mymessages").innerHTML=r.data.length?r.data.map(m=>`<div class="card">${esc(m.message_text)}<p class="small">${new Date(m.created_at).toLocaleString("fa-IR")}</p></div>`).join(""):'<p class="empty">پیامی ثبت نشده است.</p>'}
-$("reportform").onsubmit=async e=>{
- e.preventDefault();let r=await db.from("reports").insert({user_id:user.id,report_date:$("rdate").value,space_id:profile.space_id}).select().single();if(r.error){say(r.error.message);return}
- let rows=[...$("qfields").querySelectorAll("textarea[data-qid]")].map(t=>({report_id:r.data.id,user_id:user.id,question_id:t.dataset.qid,question_text:t.dataset.qtext,answer_text:t.value.trim()})).filter(x=>x.answer_text);
- let extra=$("extra").value.trim();if(extra)rows.push({report_id:r.data.id,user_id:user.id,question_id:null,question_text:"مطالب یا درخواست اضافی برای مدیر",answer_text:extra});
- if(rows.length){let a=await db.from("answers").insert(rows);if(a.error){say("گزارش ثبت شد اما پاسخ‌ها ذخیره نشدند: "+a.error.message);return}}
- e.target.reset();$("rdate").value=new Date().toLocaleDateString("en-CA");say("گزارش ثبت شد.");await history();
+
+const $ = id => document.getElementById(id);
+
+const show = (id, visible=true) => $(id).classList.toggle("hidden",!visible);
+
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+
+const localDate = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 };
-$("messageform").onsubmit=async e=>{e.preventDefault();let r=await db.from("messages").insert({user_id:user.id,message_text:$("messagebody").value.trim()});if(r.error){say(r.error.message);return}$("messagebody").value="";say("پیام ارسال شد.");await myMessages()};
+
+let db;
+let currentUser = null;
+let profile = null;
+let isAdmin = false;
+let categories = [];
+let spaces = [];
+let questions = [];
+let members = [];
+
+function notify(id,text,error=false){
+  const el=$(id);
+  if(!el)return;
+  el.innerHTML = `<div class="notice ${error?"error":"success"}">${escapeHTML(text)}</div>`;
+}
+
+function checkConfig(){
+  if(!window.supabase || !window.APP_CONFIG ||
+     !APP_CONFIG.SUPABASE_URL || !APP_CONFIG.SUPABASE_PUBLISHABLE_KEY){
+    $("authMessage").innerHTML =
+      '<div class="notice error">فایل config.js یا تنظیمات اتصال پیدا نشد.</div>';
+    return false;
+  }
+  db=window.supabase.createClient(
+    APP_CONFIG.SUPABASE_URL,
+    APP_CONFIG.SUPABASE_PUBLISHABLE_KEY
+  );
+  return true;
+}
+
+async function run(query){
+  const {data,error}=await query;
+  if(error) throw error;
+  return data;
+}
+
+function errorText(error){
+  return error?.message || "خطای نامشخص رخ داد.";
+}
+
+function authMode(mode){
+  const login=mode==="login";
+  show("loginForm",login);
+  show("signupForm",!login);
+  $("loginTab").className=login?"":"secondary";
+  $("signupTab").className=login?"secondary":"";
+  $("authMessage").innerHTML="";
+}
+
+$("loginTab").onclick=()=>authMode("login");
+$("signupTab").onclick=()=>authMode("signup");
+
+$("loginForm").onsubmit=async e=>{
+  e.preventDefault();
+  if(!db)return;
+  const button=e.submitter;
+  button.disabled=true;
+  try{
+    const {error}=await db.auth.signInWithPassword({
+      email:$("loginEmail").value.trim(),
+      password:$("loginPassword").value
+    });
+    if(error)throw error;
+    await loadApp();
+  }catch(err){
+    notify("authMessage",errorText(err),true);
+  }finally{button.disabled=false;}
+};
+
+$("signupForm").onsubmit=async e=>{
+  e.preventDefault();
+  if(!db)return;
+  const button=e.submitter;
+  button.disabled=true;
+  try{
+    const name=$("signupName").value.trim();
+    const email=$("signupEmail").value.trim();
+    const password=$("signupPassword").value;
+
+    const {data,error}=await db.auth.signUp({
+      email,password,
+      options:{data:{full_name:name}}
+    });
+    if(error)throw error;
+
+    if(data.session){
+      await loadApp();
+    }else{
+      notify("authMessage","حساب ایجاد شد. اگر تأیید ایمیل فعال باشد، ایمیل خود را تأیید کن و سپس وارد شو.");
+      authMode("login");
+    }
+  }catch(err){
+    notify("authMessage",errorText(err),true);
+  }finally{button.disabled=false;}
+};
+
+$("logoutBtn").onclick=async()=>{
+  await db.auth.signOut();
+  currentUser=null;
+  profile=null;
+  show("appPage",false);
+  show("authPage",true);
+};
+
+async function loadApp(){
+  const {data:{user},error}=await db.auth.getUser();
+  if(error)throw error;
+  if(!user){
+    show("authPage",true);
+    show("appPage",false);
+    return;
+  }
+
+  currentUser=user;
+  isAdmin=user.app_metadata?.role==="admin";
+
+  show("authPage",false);
+  show("appPage",true);
+  $("userLabel").textContent=user.email||"کاربر";
+  $("welcomeTitle").textContent="خوش آمدید";
+  $("welcomeInfo").textContent=user.email||"";
+
+  await ensureProfile();
+
+  if(isAdmin){
+    show("adminArea",true);
+    show("memberArea",false);
+    show("pendingBox",false);
+    await loadAdmin();
+  }else{
+    show("adminArea",false);
+    if(!profile || !profile.category_id || !profile.space_id){
+      show("memberArea",false);
+      show("pendingBox",true);
+      return;
+    }
+    show("pendingBox",false);
+    show("memberArea",true);
+    await loadMember();
+  }
+}
+
+async function ensureProfile(){
+  profile=await run(
+    db.from("profiles").select("*").eq("user_id",currentUser.id).maybeSingle()
+  );
+
+  if(!profile){
+    const {data,error}=await db.from("profiles").insert({
+      user_id:currentUser.id,
+      full_name:currentUser.user_metadata?.full_name || currentUser.email
+    }).select().single();
+
+    if(error)throw error;
+    profile=data;
+  }
+}
+
+async function loadCommon(){
+  categories=await run(
+    db.from("categories").select("*").order("sort_order")
+  );
+  spaces=await run(
+    db.from("spaces").select("*").order("sort_order")
+  );
+  questions=await run(
+    db.from("questions").select("*").order("sort_order")
+  );
+}
+
+async function loadMember(){
+  await loadCommon();
+
+  const cat=categories.find(x=>x.id===profile.category_id);
+  const space=spaces.find(x=>x.id===profile.space_id);
+
+  $("memberCategory").textContent=cat?.name||"-";
+  $("memberSpace").textContent=space?.name||"-";
+
+  const myQuestions=questions.filter(q=>
+    q.category_id===profile.category_id && q.is_active
+  );
+
+  $("memberQuestions").innerHTML=myQuestions.length
+    ?myQuestions.map(q=>`<div class="item">${escapeHTML(q.body)}</div>`).join("")
+    :'<p class="small">فعلاً فعالیتی برای این دسته‌بندی ثبت نشده است.</p>';
+
+  $("reportDate").value=localDate();
+
+  $("reportQuestions").innerHTML=myQuestions.map(q=>`
+    <div class="question">
+      <label>${escapeHTML(q.body)}</label>
+      <textarea data-question="${q.id}" placeholder="پاسخ یا گزارش خود را بنویسید..."></textarea>
+    </div>
+  `).join("");
+
+  await loadMyReports();
+  await loadMyMessages();
+}
+
 async function loadAdmin(){
- await loadCats();await loadSpaces();
- let [m,r,msg]=await Promise.all([db.from("profiles").select("*").order("created_at",{ascending:false}),db.from("reports").select("*").order("report_date",{ascending:false}),db.from("messages").select("*").order("created_at",{ascending:false})]);
- if(m.error||r.error||msg.error)throw(m.error||r.error||msg.error);
- members=m.data||[];allReports=r.data||[];allMessages=msg.data||[];
- $("stats").innerHTML=[["اعضا",members.length],["گزارش‌ها",allReports.length],["پیام‌ها",allMessages.length],["فضاها",spaces.length]].map(x=>`<div class="stat">${x[0]}<strong>${x[1]}</strong></div>`).join("");
- await renderMembers();renderSpaces();await renderQuestions();await renderReports();renderMessages();renderCats();
+  await loadCommon();
+
+  members=await run(
+    db.from("profiles").select("*").order("created_at",{ascending:false})
+  );
+
+  const reports=await run(db.from("reports").select("id"));
+  $("countMembers").textContent=members.length;
+  $("countReports").textContent=reports.length;
+  $("countQuestions").textContent=questions.length;
+  $("countSpaces").textContent=spaces.length;
+
+  fillCategorySelects();
+  renderMembers();
+  renderSpaces();
+  renderQuestions();
+  renderCategories();
+  await loadAdminReports();
+  await loadAdminMessages();
 }
-async function renderMembers(){
- $("members").innerHTML=members.length?'<div class="table-wrap"><table><thead><tr><th>نام</th><th>شناسه حساب</th><th>دسته</th><th>فضا</th><th>ثبت</th></tr></thead><tbody>'+members.map(p=>`<tr><td>${esc(p.full_name||"بدون نام")}</td><td><small>${esc(p.user_id)}</small></td><td><select data-cat="${p.user_id}"><option value="">بدون دسته</option>${cats.map(c=>`<option value="${c.id}" ${p.category_id===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select></td><td><select data-space="${p.user_id}"><option value="">بدون فضا</option>${spaces.map(s=>`<option value="${s.id}" ${p.space_id===s.id?"selected":""}>${esc(s.name)}</option>`).join("")}</select></td><td><button class="btn" data-save="${p.user_id}">ذخیره</button></td></tr>`).join("")+'</tbody></table></div>':'<p class="empty">هنوز عضوی ثبت‌نام نکرده است.</p>';
- $("members").querySelectorAll("[data-save]").forEach(b=>b.onclick=async()=>{let id=b.dataset.save,c=$("members").querySelector(`[data-cat="${id}"]`).value||null,s=$("members").querySelector(`[data-space="${id}"]`).value||null,sp=spaces.find(x=>x.id===s);if(s&&sp?.category_id!==c){say("فضا متعلق به دسته انتخاب‌شده نیست.");return}let r=await db.from("profiles").update({category_id:c,space_id:s}).eq("user_id",id);if(r.error){say(r.error.message);return}say("دسترسی عضو ذخیره شد.");await loadAdmin()});
+
+function fillCategorySelects(){
+  const options=categories.map(c=>
+    `<option value="${c.id}">${escapeHTML(c.name)}</option>`
+  ).join("");
+
+  $("spaceCategory").innerHTML=options;
+  $("questionCategory").innerHTML=options;
 }
+
+function renderMembers(){
+  $("membersList").innerHTML=members.length?members.map(m=>{
+    const cat=categories.find(c=>c.id===m.category_id);
+    const space=spaces.find(s=>s.id===m.space_id);
+
+    return `
+    <div class="item">
+      <strong>${escapeHTML(m.full_name||"بدون نام")}</strong>
+      <p class="small">شناسه: ${escapeHTML(m.user_id)}</p>
+      <label>نام نمایشی</label>
+      <input id="name_${m.user_id}" value="${escapeHTML(m.full_name||"")}">
+      <label>دسته‌بندی</label>
+      <select id="cat_${m.user_id}">
+        <option value="">بدون دسته‌بندی</option>
+        ${categories.map(c=>`<option value="${c.id}" ${c.id===m.category_id?"selected":""}>${escapeHTML(c.name)}</option>`).join("")}
+      </select>
+      <label>فضای فعالیت</label>
+      <select id="space_${m.user_id}">
+        <option value="">بدون فضا</option>
+        ${spaces.map(s=>`<option value="${s.id}" ${s.id===m.space_id?"selected":""}>${escapeHTML(s.name)}</option>`).join("")}
+      </select>
+      <button onclick="saveMember('${m.user_id}')">ذخیره تغییرات</button>
+    </div>`;
+  }).join(""):'<p>هنوز عضوی ثبت نشده است.</p>';
+}
+
+window.saveMember=async id=>{
+  try{
+    const name=$("name_"+id).value.trim();
+    const categoryId=$("cat_"+id).value||null;
+    const spaceId=$("space_"+id).value||null;
+
+    if(spaceId){
+      const selected=spaces.find(s=>s.id===spaceId);
+      if(!selected || selected.category_id!==categoryId){
+        alert("فضای انتخاب‌شده متعلق به این دسته‌بندی نیست.");
+        return;
+      }
+    }
+
+    await run(db.from("profiles").update({
+      full_name:name,
+      category_id:categoryId,
+      space_id:spaceId
+    }).eq("user_id",id));
+
+    alert("اطلاعات عضو ذخیره شد.");
+    await loadAdmin();
+  }catch(err){alert(errorText(err));}
+};
+
+$("addSpace").onclick=async()=>{
+  try{
+    const name=$("spaceName").value.trim();
+    const categoryId=$("spaceCategory").value;
+    if(!name||!categoryId)throw new Error("نام فضا و دسته‌بندی را وارد کن.");
+
+    await run(db.from("spaces").insert({
+      name,category_id:categoryId,
+      sort_order:spaces.length
+    }));
+
+    $("spaceName").value="";
+    notify("spaceStatus","فضای جدید ایجاد شد.");
+    await loadAdmin();
+  }catch(err){notify("spaceStatus",errorText(err),true);}
+};
+
 function renderSpaces(){
- $("spacecat").innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
- $("spaces").innerHTML=spaces.map(s=>`<div class="card"><div class="top"><div><b>${esc(s.name)}</b> <span class="badge">${esc(cats.find(c=>c.id===s.category_id)?.name||"")}</span></div><div><button class="btn secondary" data-edit-space="${s.id}">ویرایش</button> <button class="btn danger" data-del-space="${s.id}">حذف</button></div></div></div>`).join("")||'<p class="empty">فضایی ساخته نشده است.</p>';
- $("spaces").querySelectorAll("[data-edit-space]").forEach(b=>b.onclick=()=>{let s=spaces.find(x=>x.id===b.dataset.editSpace);$("spaceid").value=s.id;$("spacecat").value=s.category_id;$("spacename").value=s.name});
- $("spaces").querySelectorAll("[data-del-space]").forEach(b=>b.onclick=async()=>{if(!confirm("فضا حذف شود؟"))return;let r=await db.from("spaces").delete().eq("id",b.dataset.delSpace);if(r.error){say(r.error.message);return}await loadAdmin()});
+  $("spacesList").innerHTML=spaces.length?spaces.map(s=>{
+    const cat=categories.find(c=>c.id===s.category_id);
+    return `<div class="item">
+      <strong>${escapeHTML(s.name)}</strong>
+      <p class="small">${escapeHTML(cat?.name||"بدون دسته‌بندی")}</p>
+      <button class="danger" onclick="deleteSpace('${s.id}')">حذف فضا</button>
+    </div>`;
+  }).join(""):"هنوز فضایی ایجاد نشده است.";
 }
-$("spaceform").onsubmit=async e=>{e.preventDefault();let id=$("spaceid").value,p={category_id:$("spacecat").value,name:$("spacename").value.trim()},r=id?await db.from("spaces").update(p).eq("id",id):await db.from("spaces").insert(p);if(r.error){say(r.error.message);return}$("spaceform").reset();$("spaceid").value="";await loadAdmin()};
-async function renderQuestions(){
- let r=await db.from("questions").select("*").order("sort_order");if(r.error)throw r.error;allQuestions=r.data||[];
- $("qcat").innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
- $("questions").innerHTML=allQuestions.map(q=>`<div class="card"><div class="top"><div><span class="badge">${esc(cats.find(c=>c.id===q.category_id)?.name||"")}</span> ${q.is_active?"":"(غیرفعال)"}<p>${esc(q.body)}</p></div><div><button class="btn secondary" data-edit-q="${q.id}">ویرایش</button> <button class="btn danger" data-del-q="${q.id}">حذف</button></div></div></div>`).join("")||'<p class="empty">پرسشی وجود ندارد.</p>';
- $("questions").querySelectorAll("[data-edit-q]").forEach(b=>b.onclick=()=>{let q=allQuestions.find(x=>x.id===b.dataset.editQ);$("qid").value=q.id;$("qcat").value=q.category_id;$("qbody").value=q.body;$("qorder").value=q.sort_order;$("qactive").value=String(q.is_active)});
- $("questions").querySelectorAll("[data-del-q]").forEach(b=>b.onclick=async()=>{if(!confirm("پرسش حذف شود؟"))return;let r=await db.from("questions").delete().eq("id",b.dataset.delQ);if(r.error){say(r.error.message);return}await renderQuestions()});
+
+window.deleteSpace=async id=>{
+  if(!confirm("این فضا حذف شود؟"))return;
+  try{
+    await run(db.from("spaces").delete().eq("id",id));
+    await loadAdmin();
+  }catch(err){alert(errorText(err));}
+};
+
+$("addQuestion").onclick=async()=>{
+  try{
+    const body=$("questionBody").value.trim();
+    const categoryId=$("questionCategory").value;
+    if(!body||!categoryId)throw new Error("متن سؤال و دسته‌بندی را وارد کن.");
+
+    await run(db.from("questions").insert({
+      body,
+      category_id:categoryId,
+      sort_order:Number($("questionOrder").value)||0,
+      is_active:true
+    }));
+
+    $("questionBody").value="";
+    notify("questionStatus","سؤال ثبت شد.");
+    await loadAdmin();
+  }catch(err){notify("questionStatus",errorText(err),true);}
+};
+
+function renderQuestions(){
+  $("questionsList").innerHTML=questions.length?questions.map(q=>{
+    const cat=categories.find(c=>c.id===q.category_id);
+    return `<div class="item">
+      <strong>${escapeHTML(q.body)}</strong>
+      <p class="small">${escapeHTML(cat?.name||"")}</p>
+      <p class="small">وضعیت: ${q.is_active?"فعال":"غیرفعال"}</p>
+      <div class="row">
+        <button class="secondary" onclick="toggleQuestion('${q.id}',${!q.is_active})">${q.is_active?"غیرفعال کردن":"فعال کردن"}</button>
+        <button class="danger" onclick="deleteQuestion('${q.id}')">حذف</button>
+      </div>
+    </div>`;
+  }).join(""):"سؤالی ثبت نشده است.";
 }
-$("questionform").onsubmit=async e=>{e.preventDefault();let id=$("qid").value,p={category_id:$("qcat").value,body:$("qbody").value.trim(),sort_order:+$("qorder").value||0,is_active:$("qactive").value==="true"},r=id?await db.from("questions").update(p).eq("id",id):await db.from("questions").insert(p);if(r.error){say(r.error.message);return}$("questionform").reset();$("qid").value="";$("qorder").value=0;await renderQuestions()};
-async function renderReports(){
- let filter=$("filterdate").value,rows=allReports.filter(r=>!filter||r.report_date===filter);
- if(!rows.length){$("reports").innerHTML='<p class="empty">گ
+
+window.toggleQuestion=async(id,value)=>{
+  try{
+    await run(db.from("questions").update({is_active:value}).eq("id",id));
+    await loadAdmin();
+  }catch(err){alert(errorText(err));}
+};
+
+window.deleteQuestion=async id=>{
+  if(!confirm("این سؤال حذف شود؟"))return;
+  try{
+    await run(db.from("questions").delete().eq("id",id));
+    await loadAdmin();
+  }catch(err){alert(errorText(err));}
+};
+
+$("submitReport").onclick=async()=>{
+  const button=$("submitReport");
+  button.disabled=true;
+  try{
+    const date=$("reportDate").value;
+    if(!date)throw new Error("تاریخ گزارش را انتخاب کن.");
+
+    const fields=[...$("reportQuestions").querySelectorAll("textarea[data-question]")];
+    if(!fields.length)throw new Error("برای گروه شما سؤالی ثبت نشده است.");
+
+    const report=await run(db.from("reports").insert({
+      user_id:currentUser.id,
+      report_date:date,
+      space_id:profile.space_id
+    }).select().single());
+
+    const answers=fields.map(field=>{
+      const q=questions.find(x=>x.id===field.dataset.question);
+      return {
+        report_id:report.id,
+        user_id:currentUser.id,
+        question_id:field.dataset.question,
+        question_text:q?.body||"",
+        answer_text:field.value.trim()
+      };
+    });
+
+    if(answers.length){
+      await run(db.from("answers").insert(answers));
+    }
+
+    notify("reportMessage","گزارش با موفقیت ثبت شد.");
+    fields.forEach(f=>f.value="");
+    await loadMyReports();
+  }catch(err){notify("reportMessage",errorText(err),true);}
+  finally{button.disabled=false;}
+};
+
+async function loadMyReports(){
+  const reports=await run(
+    db.from("reports").select("*")
+      .eq("user_id",currentUser.id)
+      .order("report_date",{ascending:false})
+  );
+
+  if(!reports.length){
+    $("myReportsList").innerHTML="<p>هنوز گزارشی ثبت نکرده‌ای.</p>";
+    return;
+  }
+
+  let html="";
+  for(const r of reports){
+    const answers=await run(
+      db.from("answers").select("*").eq("report_id",r.id)
+    );
+    html+=`
+      <div class="item">
+        <strong>گزارش ${escapeHTML(r.report_date)}</strong>
+        ${answers.map(a=>`
+          <p><b>${escapeHTML(a.question_text)}</b></p>
+          <p>${escapeHTML(a.answer_text||"بدون پاسخ")}</p>
+        `).join("")}
+      </div>`;
+  }
+  $("myReportsList").innerHTML=html;
+}
+
+async function loadAdminReports(){
+  const date=$("adminReportDate").value;
+  let query=db.from("reports").select("*").order("report_date",{ascending:false});
+  if(date)query=query.eq("report_date",date);
+
+  const reports=await run(query);
+  if(!reports.length){
+    $("reportsList").innerHTML="<p>گزارشی برای نمایش وجود ندارد.</p>";
+    return;
+  }
+
+  let html="";
+  for(const r of reports){
+    const member=members.find(m=>m.user_id===r.user_id);
+    const answers=await run(
+      db.from("answers").select("*").eq("report_id",r.id)
+    );
+
+    html+=`
+    <div class="item">
+      <strong>${escapeHTML(member?.full_name||"عضو")}</strong>
+      <p class="small">تاریخ: ${escapeHTML(r.report_date)}</p>
+      ${answers.map(a=>`
+        <hr>
+        <b>${escapeHTML(a.question_text)}</b>
+        <p>${escapeHTML(a.answer_text||"بدون پاسخ")}</p>
+      `).join("")}
+      <button class="danger" onclick="deleteReport('${r.id}')">حذف گزارش</button>
+    </div>`;
+  }
+  $("reportsList").innerHTML=html;
+}
+
+$("filterReports").onclick=async()=>{
+  try{await loadAdminReports();}
+  catch(err){notify("appMessage",errorText(err),true);}
+};
+
+window.deleteReport=async id=>{
+  if(!confirm("گزارش و پاسخ‌های آن حذف شوند؟"))return;
+  try{
+    await run(db.from("answers").delete().eq("report_id",id));
+    await run(db.from("reports").delete().eq("id",id));
+    await loadAdminReports();
+  }catch(err){alert(errorText(err));}
+};
+
+$("sendMessage").onclick=async()=>{
+  try{
+    const message=$("messageText").value.trim();
+    if(!message)throw new Error("متن پیام را بنویس.");
+
+    await run(db.from("messages").insert({
+      user_id:currentUser.id,
+      message_text:message
+    }));
+
+    $("messageText").value="";
+    notify("messageStatus","پیام ارسال شد.");
+    await loadMyMessages();
+  }catch(err){notify("messageStatus",errorText(err),true);}
+};
+
+async function loadMyMessages(){
+  const rows=await run(
+    db.from("messages").select("*")
+      .eq("user_id",currentUser.id)
+      .order("created_at",{ascending:false})
+  );
+
+  $("myMessages").innerHTML=rows.length?rows.map(m=>`
+    <div class="item">
+      <p>${escapeHTML(m.message_text)}</p>
+      <span class="small">${new Date(m.created_at).toLocaleString("fa-IR")}</span>
+    </div>
+  `).join(""):"پیامی ارسال نکرده‌ای.";
+}
+
+async function loadAdminMessages(){
+  const rows=await run(
+    db.from("messages").select("*").order("created_at",{ascending:false})
+  );
+
+  $("adminMessagesList").innerHTML=rows.length?rows.map(m=>{
+    const member=members.find(x=>x.user_id===m.user_id);
+    return `
+      <div class="item">
+        <strong>${escapeHTML(member?.full_name||"عضو")}</strong>
+        <p>${escapeHTML(m.message_text)}</p>
+        <span class="small">${new Date(m.created_at).toLocaleString("fa-IR")}</span>
+        <br>
+        <button class="danger" onclick="deleteMessage('${m.id}')">حذف پیام</button>
+      </div>`;
+  }).join(""):"پیامی وجود ندارد.";
+}
+
+window.deleteMessage=async id=>{
+  if(!confirm("پیام حذف شود؟"))return;
+  try{
+    await run(db.from("messages").delete().eq("id",id));
+    await loadAdminMessages();
+  }catch(err){alert(errorText(err));}
+};
+
+$("addCategory").onclick=async()=>{
+  try{
+    const name=$("categoryName").value.trim();
+    if(!name)throw new Error("نام دسته‌بندی را وارد کن.");
+
+    await run(db.from("categories").insert({
+      name,sort_order:categories.length+1
+    }));
+
+    $("categoryName").value="";
+    notify("categoryStatus","دسته‌بندی اضافه شد.");
+    await loadAdmin();
+  }catch(err){notify("categoryStatus",errorText(err),true);}
+};
+
+function renderCategories(){
+  $("categoriesList").innerHTML=categories.map(c=>`
+    <div class="item row">
+      <strong>${escapeHTML(c.name)}</strong>
+      <button class="danger" onclick="deleteCategory('${c.id}')">حذف</button>
+    </div>
+  `).join("");
+}
+
+window.deleteCategory=async id=>{
+  if(!confirm("دسته‌بندی حذف شود؟ ممکن است به دلیل وابستگی به فضاها یا سؤال‌ها حذف نشود."))return;
+  try{
+    await run(db.from("categories").delete().eq("id",id));
+    await loadAdmin();
+  }catch(err){alert(errorText(err));}
+};
+
+function setupNavigation(navId){
+  const nav=$(navId);
+  nav.querySelectorAll("button[data-page]").forEach(btn=>{
+    btn.onclick=()=>{
+      nav.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const parent=nav.parentElement;
+      parent.querySelectorAll(".page").forEach(page=>show(page.id,false));
+      show(btn.dataset.page,true);
+    };
+  });
+}
+
+setupNavigation("memberNav");
+setupNavigation("adminNav");
+
+async function start(){
+  if(!checkConfig())return;
+
+  const {data:{session},error}=await db.auth.getSession();
+  if(error)throw error;
+
+  if(session){
+    await loadApp();
+  }else{
+    show("authPage",true);
+    show("appPage",false);
+  }
+
+  db.auth.onAuthStateChange((event,session)=>{
+    if(event==="SIGNED_OUT"){
+      show("authPage",true);
+      show("appPage",false);
+    }
+  });
+}
+
+start().catch(err=>{
+  show("authPage",true);
+  show("appPage",false);
+  notify("authMessage",errorText(err),true);
+});
+
+})();
+</script>
+</body>
+</html>
