@@ -445,22 +445,34 @@ function authMode(mode){
 $("loginTab").onclick=()=>authMode("login");
 $("signupTab").onclick=()=>authMode("signup");
 
+
 $("loginForm").onsubmit=async e=>{
   e.preventDefault();
-  if(!db)return;
-  const button=e.submitter;
+
+  notify("authMessage","در حال بررسی اطلاعات ورود...");
+
+  const button=$("loginForm").querySelector('button[type="submit"]');
   button.disabled=true;
+
   try{
-    const {error}=await db.auth.signInWithPassword({
+    const {data,error}=await db.auth.signInWithPassword({
       email:$("loginEmail").value.trim(),
       password:$("loginPassword").value
     });
-    if(error)throw error;
+
+    if(error) throw error;
+
+    notify("authMessage","ورود موفق بود؛ در حال بارگذاری سامانه...");
+
     await loadApp();
+
   }catch(err){
     notify("authMessage",errorText(err),true);
-  }finally{button.disabled=false;}
+  }finally{
+    button.disabled=false;
+  }
 };
+  
 
 $("signupForm").onsubmit=async e=>{
   e.preventDefault();
