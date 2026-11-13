@@ -392,17 +392,36 @@ function notify(id,text,error=false){
 }
 
 function checkConfig(){
-  if(!window.supabase || !window.APP_CONFIG ||
-     !APP_CONFIG.SUPABASE_URL || !APP_CONFIG.SUPABASE_PUBLISHABLE_KEY){
+  const problems = [];
+
+  if(!window.supabase){
+    problems.push("کتابخانه Supabase بارگذاری نشده است.");
+  }
+
+  if(!window.APP_CONFIG){
+    problems.push("فایل config.js بارگذاری نشده است.");
+  }else{
+    if(!window.APP_CONFIG.SUPABASE_URL){
+      problems.push("آدرس Supabase خالی است.");
+    }
+    if(!window.APP_CONFIG.SUPABASE_PUBLISHABLE_KEY){
+      problems.push("کلید عمومی Supabase خالی است.");
+    }
+  }
+
+  if(problems.length){
     $("authMessage").innerHTML =
-      '<div class="notice error">فایل config.js یا تنظیمات اتصال پیدا نشد.</div>';
+      '<div class="notice error">' + problems.join("<br>") + '</div>';
     return false;
   }
+
   db=window.supabase.createClient(
-    APP_CONFIG.SUPABASE_URL,
-    APP_CONFIG.SUPABASE_PUBLISHABLE_KEY
+    window.APP_CONFIG.SUPABASE_URL,
+    window.APP_CONFIG.SUPABASE_PUBLISHABLE_KEY
   );
+
   return true;
+}
 }
 
 async function run(query){
