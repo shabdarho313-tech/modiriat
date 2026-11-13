@@ -511,7 +511,9 @@ $("logoutBtn").onclick=async()=>{
 };
 
 async function loadApp(){
+  alert("مرحله A: شروع دریافت کاربر");
   const {data:{user},error}=await db.auth.getUser();
+  alert("مرحله B: دریافت کاربر تمام شد");
   if(error)throw error;
   if(!user){
     show("authPage",true);
